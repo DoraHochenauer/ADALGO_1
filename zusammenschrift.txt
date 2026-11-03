@@ -1,0 +1,12 @@
+Giftwrap
+
+best case: alle auf Kreis
+crash case: Linie
+worst case: tba
+
+
+
+Quickqull
+
+best case: Linie
+worst case: alle auf Kreis
