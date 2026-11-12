@@ -1,15 +1,13 @@
 #include <iostream>
 #include "raylib.h"
-#include <cstdlib>
 #include <vector>
-#include <ctime>
+
+#include "PointCloud.h"
 
 
 
-int randomInt(int min, int max) {
-    return rand() % (max - min + 1) + min;
-}
 
+const mode selected_mode = mode::random_points;
 const int numberPoints = 5;
 
 const int winWidth = 800;
@@ -17,31 +15,31 @@ const int winHeight = 600;
 
 const int drawBorder = 20;
 
-std::vector<Vector2> Pos;
 
 
 int main() {
-    srand(time(0));
+    // create points
+    PointCloud* points = new PointCloud();
+
+    points->CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selected_mode);
 
     InitWindow(winWidth, winHeight, "ADALGO - TASK1");
     SetTargetFPS(60);
 
-    for (int i = 0; i < numberPoints; i++) {
-        Pos.push_back(Vector2{(float)randomInt(drawBorder, winWidth - drawBorder), (float)randomInt(drawBorder, winHeight - drawBorder)});
 
-    }
-
+    //DrawCall
     while (!WindowShouldClose()) {
         BeginDrawing();
 
 
         for (int i = 0; i < numberPoints; i++) {
-            DrawCircle(Pos[i].x, Pos[i].y, 4, BLUE);
+            DrawCircle(points->GetPointCloud()[i].x, points->GetPointCloud()[i].y, 4, BLUE);
         }
         ClearBackground(RAYWHITE);
         EndDrawing();
     }
     CloseWindow();
 
+    delete points;
     return 0;
 }
