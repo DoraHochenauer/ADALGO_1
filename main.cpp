@@ -7,7 +7,7 @@
 
 
 
-const mode selected_mode = mode::random_points;
+const mode selected_mode = mode::circle;
 const int numberPoints = 5;
 
 const int winWidth = 800;
