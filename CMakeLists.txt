@@ -17,5 +17,7 @@ add_executable(ADALGO main.cpp
         randomGenerator.cpp
         randomGenerator.h
         Point.cpp
-        Point.h)
+        Point.h
+        Painter.cpp
+        Painter.h)
 target_link_libraries(ADALGO raylib)

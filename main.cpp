@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include <vector>
 
+#include "Painter.h"
 #include "PointCloud.h"
 
 
@@ -19,9 +20,10 @@ const int drawBorder = 20;
 
 int main() {
     // create points
-    PointCloud* points = new PointCloud();
+    PointCloud points;
+    Painter painter;
 
-    points->CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selected_mode);
+    points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selected_mode);
 
     InitWindow(winWidth, winHeight, "ADALGO - TASK1");
     SetTargetFPS(60);
@@ -39,13 +41,18 @@ int main() {
 
 
 
-            DrawCircle(points->GetPointCloud()[i].GetPoint().x, points->GetPointCloud()[i].GetPoint().y, 4, points->GetPointCloud()[i].GetColor());
+            painter.PaintPoint(points.GetPointCloud()[i]);
+
+            painter.PaintLine(points.GetMinXPoint(), points.GetMaxYPoint());
+            painter.PaintLine(points.GetMaxYPoint(), points.GetMaxXPoint());
+            painter.PaintLine(points.GetMaxXPoint(), points.GetMinYPoint());
+            painter.PaintLine(points.GetMinYPoint(), points.GetMinXPoint());
+
         }
         ClearBackground(RAYWHITE);
         EndDrawing();
     }
     CloseWindow();
 
-    delete points;
     return 0;
 }
