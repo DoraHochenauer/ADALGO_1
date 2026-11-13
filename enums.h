@@ -10,5 +10,9 @@ enum class mode {
     random_points, line, circle, performance
 };
 
+enum class algorithm {
+    quickqull, gift_wrapping
+};
+
 
 #endif //ADALGO_ENUMS_H

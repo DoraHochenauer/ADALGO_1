@@ -4,8 +4,7 @@
 
 #include "Painter.h"
 #include "PointCloud.h"
-
-
+#include "raymath.h"
 
 
 const mode selected_mode = mode::random_points;
@@ -22,6 +21,8 @@ int main() {
     // create points
     PointCloud points;
     Painter painter;
+    float progress = 0.0f;
+    const float secondsPerLine = 0.5f;
 
     points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selected_mode);
 
@@ -31,27 +32,24 @@ int main() {
 
     //DrawCall
     while (!WindowShouldClose()) {
+        progress += GetFrameTime() / secondsPerLine;
+
         BeginDrawing();
-
-
-        for (int i = 0; i < numberPoints; i++) {
-
-
-
-
-
-
-            painter.PaintPoint(points.GetPointCloud()[i]);
-
-            painter.PaintLine(points.GetMinXPoint(), points.GetMaxYPoint());
-            painter.PaintLine(points.GetMaxYPoint(), points.GetMaxXPoint());
-            painter.PaintLine(points.GetMaxXPoint(), points.GetMinYPoint());
-            painter.PaintLine(points.GetMinYPoint(), points.GetMinXPoint());
-
-        }
         ClearBackground(RAYWHITE);
+
+        for (Point& p : points.GetPointCloud()) {
+            painter.PaintPoint(p);
+        }
+
+        // Linie i wächst, während progress von i auf i+1 steigt (PaintLine begrenzt auf 0..1)
+        painter.PaintLine(points.GetMinXPoint(), points.GetMaxYPoint(), progress - 0);
+        painter.PaintLine(points.GetMaxYPoint(), points.GetMaxXPoint(), progress - 1);
+        painter.PaintLine(points.GetMaxXPoint(), points.GetMinYPoint(), progress - 2);
+        painter.PaintLine(points.GetMinYPoint(), points.GetMinXPoint(), progress - 3);
+
         EndDrawing();
     }
+
     CloseWindow();
 
     return 0;
