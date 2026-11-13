@@ -7,8 +7,8 @@
 
 
 
-const mode selected_mode = mode::circle;
-const int numberPoints = 5;
+const mode selected_mode = mode::random_points;
+const int numberPoints = 20;
 
 const int winWidth = 800;
 const int winHeight = 600;
@@ -33,7 +33,13 @@ int main() {
 
 
         for (int i = 0; i < numberPoints; i++) {
-            DrawCircle(points->GetPointCloud()[i].x, points->GetPointCloud()[i].y, 4, BLUE);
+
+
+
+
+
+
+            DrawCircle(points->GetPointCloud()[i].GetPoint().x, points->GetPointCloud()[i].GetPoint().y, 4, points->GetPointCloud()[i].GetColor());
         }
         ClearBackground(RAYWHITE);
         EndDrawing();

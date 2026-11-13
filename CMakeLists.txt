@@ -15,5 +15,7 @@ add_executable(ADALGO main.cpp
         PointCloud.h
         enums.h
         randomGenerator.cpp
-        randomGenerator.h)
+        randomGenerator.h
+        Point.cpp
+        Point.h)
 target_link_libraries(ADALGO raylib)
