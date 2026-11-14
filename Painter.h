@@ -10,9 +10,7 @@
 class Painter {
 public:
     void PaintPoint(Point &point);
-
-    // progress 0..1: wie viel der Linie von A Richtung B gezeichnet wird (1 = ganz)
-    void PaintLine(const Point &pointA, const Point &pointB, float progress = 1.0f);
+    void PaintLine(const Point &pointA, const Point &pointB, float progress = 1.0f, Color color = BLACK);
 };
 
 

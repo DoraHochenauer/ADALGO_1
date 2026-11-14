@@ -19,5 +19,9 @@ add_executable(ADALGO main.cpp
         Point.cpp
         Point.h
         Painter.cpp
-        Painter.h)
+        Painter.h
+        ConvexHull.cpp
+        ConvexHull.h
+        GiftWrapping.cpp
+        GiftWrapping.h)
 target_link_libraries(ADALGO raylib)

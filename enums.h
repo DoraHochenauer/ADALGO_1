@@ -6,8 +6,12 @@
 #define ADALGO_ENUMS_H
 
 
-enum class mode {
+enum class pointcloud_mode {
     random_points, line, circle, performance
+};
+
+enum class program_mode {
+    visual, performance
 };
 
 enum class algorithm {

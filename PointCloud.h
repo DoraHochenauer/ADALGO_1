@@ -14,6 +14,7 @@ class PointCloud {
 private:
     std::vector<Point> _pointCloud;
 
+    int _countPoints = 0;
 
     size_t _minXIndex = 0;
     size_t _minYIndex = 0;
@@ -21,14 +22,16 @@ private:
     size_t _maxYIndex = 0;
 
 
-    void PushPoint(const Point&  point);
-
-
-
 public:
+    void PushPoint(const Point&  point);
+    //void RemovePoint(size_t index);
+
+    int GetCountPoints() const {return _countPoints;};
+    Point& GetPoint(size_t index);
+
     std::vector<Point> &GetPointCloud();
 
-    void CreatePointCloud(float width, float height, float border, int numberPoints, mode mode);
+    void CreatePointCloud(float width, float height, float border, int numberPoints, pointcloud_mode mode);
 
     float GetMaxX() const;
     float GetMinX() const;
@@ -37,6 +40,13 @@ public:
 
     float GetMaxY() const;
     float GetMinY() const;
+    size_t GetMaxXIndex() const{return  _maxXIndex;};
+    size_t GetMinXIndex() const {return  _minXIndex;};
+
+
+
+    size_t GetMaxYIndex() const {return  _maxYIndex;};
+    size_t GetMinYIndex() const {return  _minYIndex;};
 
 
     const Point& GetMaxXPoint() const;

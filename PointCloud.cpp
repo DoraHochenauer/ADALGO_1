@@ -10,6 +10,10 @@
 #include <iostream>
 #include <ostream>
 
+ Point& PointCloud::GetPoint(size_t index) {
+     return _pointCloud[index];
+ }
+
 std::vector<Point> &PointCloud::GetPointCloud() {
     return _pointCloud;
 }
@@ -48,6 +52,7 @@ const Point& PointCloud::GetMinYPoint() const {
 }
 
 void PointCloud::PushPoint(const Point &point) {
+    _countPoints ++;
     _pointCloud.push_back(point);
     size_t i = _pointCloud.size() - 1;
     Vector2 p = point.GetPoint();
@@ -63,21 +68,21 @@ void PointCloud::PushPoint(const Point &point) {
 
 
 
-void PointCloud::CreatePointCloud(float width, float height, float border, int numberPoints, mode mode) {
+void PointCloud::CreatePointCloud(float width, float height, float border, int numberPoints, pointcloud_mode mode) {
     _pointCloud.clear();
-    _minXIndex = _maxXIndex = _minYIndex = _maxYIndex = 0;
+    _minXIndex = _maxXIndex = _minYIndex = _maxYIndex =_countPoints = 0;
 
     RandomGenerator rg;
 
     switch (mode) {
-        case mode::line:
+        case pointcloud_mode::line:
             for (int i = 0; i < numberPoints; i++) {
                 PushPoint(Vector2{
                     rg.randomFloat(border, width - border), height / 2.0f
                 });
             }
             break;
-        case mode::random_points:
+        case pointcloud_mode::random_points:
             for (int i = 0; i < numberPoints; i++) {
                 PushPoint(Vector2{
                     rg.randomFloat(border, width - border), rg.randomFloat(border, height - border)
@@ -85,7 +90,7 @@ void PointCloud::CreatePointCloud(float width, float height, float border, int n
             }
             break;
 
-        case mode::circle: {
+        case pointcloud_mode::circle: {
             float cx = width / 2.0f;
             float cy = height / 2.0f;
             float radius = std::min(width, height) / 2.0f - border;
