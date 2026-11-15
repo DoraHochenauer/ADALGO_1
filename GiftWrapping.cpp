@@ -17,8 +17,8 @@ void GiftWrapping::Init(PointCloud &point_cloud) {
 
 void GiftWrapping::Step() {
     switch (_state) {
-        case giftwrapp_state::find_favourite:
-            StepFavourite();
+        case giftwrapp_state::find_first_favourite:
+            StepFirstFavourite();
             break;
 
         case giftwrapp_state::find_best_favourite:
@@ -32,19 +32,19 @@ void GiftWrapping::Step() {
     }
 }
 
-const char* GiftWrapping::GetStateName() const {
+const char *GiftWrapping::GetStateName() const {
     switch (_state) {
-        case giftwrapp_state::find_favourite:      return "Startfavorit aussuchen";
+        case giftwrapp_state::find_first_favourite: return "Ersten Favorit aussuchen";
         case giftwrapp_state::find_best_favourite: return "Besten Favoriten suchen";
-        case giftwrapp_state::add_favourite:       return "Favorit zur Huelle hinzufuegen";
-        case giftwrapp_state::done:                return "Fertig";
+        case giftwrapp_state::add_favourite: return "Favorit zur Huelle hinzufuegen";
+        case giftwrapp_state::done: return "Fertig";
     }
     return "";
 }
 
 void GiftWrapping::StepBestFavourite() {
-    if (_index_bestfavourite < _motherPointCloud->GetCountPoints() && !(_pointsAddedIndex.
-            contains(_index_bestfavourite))) {
+    if (_pointsAddedIndex.contains(_index_bestfavourite)) { return; }
+    if (_index_bestfavourite < _motherPointCloud->GetCountPoints()) {
         float cp = CrossProduct(_motherPointCloud->GetPoint(_current).GetPoint(),
                                 _motherPointCloud->GetPoint(_favourite).GetPoint(),
                                 _motherPointCloud->GetPointCloud()[_index_bestfavourite].GetPoint());
@@ -67,12 +67,13 @@ void GiftWrapping::StepAddFavourite() {
     _pointsAddedIndex.insert(_current);
 
     //ENDE! wieder beim Start
-    _state = (_current == _start) ? giftwrapp_state::done
-                                  : giftwrapp_state::find_favourite;
+    _state = (_current == _start)
+                 ? giftwrapp_state::done
+                 : giftwrapp_state::find_first_favourite;
 }
 
-void GiftWrapping::StepFavourite() {
-    //find first _favourite, not visited ,und nicht current = Kreuzprodukt wäre 0 und es hört auf
+void GiftWrapping::StepFirstFavourite() {
+    //find first _favourite, not visited ,und nicht current =es hört auf
     for (int i = 0; i < _motherPointCloud->GetCountPoints(); i++) {
         _favourite = i;
         if (i != _current && !_pointsAddedIndex.contains(i))
@@ -84,12 +85,8 @@ void GiftWrapping::StepFavourite() {
 }
 
 
-void GiftWrapping::StartAlgorithmVisual(PointCloud &point_cloud) {
-}
-
 //PERFORMANCE
 void GiftWrapping::StartAlgorithmPerformance(PointCloud &point_cloud) {
-
     do {
         //find first _favourite, not visited (und nicht current selbst)
         for (int i = 0; i < _motherPointCloud->GetCountPoints(); i++) {

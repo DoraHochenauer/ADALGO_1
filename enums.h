@@ -20,7 +20,7 @@ enum class algorithm {
 
 
 enum class giftwrapp_state {
-    find_favourite,    find_best_favourite, add_favourite, done
+    find_first_favourite,    find_best_favourite, add_favourite, done
 };
 
 #endif //ADALGO_ENUMS_H

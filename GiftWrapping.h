@@ -21,25 +21,24 @@ private:
     size_t _start = 0;   // Startpunkt (minX); wieder dort angekommen = Hülle geschlossen
     std::unordered_set<size_t> _pointsAddedIndex;
 
-    giftwrapp_state _state = giftwrapp_state::find_favourite;
+    giftwrapp_state _state = giftwrapp_state::find_first_favourite;
     int _index_bestfavourite = 0;
 
 public:
-    void StartAlgorithmVisual(PointCloud &point_cloud) override;
 
     void StartAlgorithmPerformance(PointCloud &point_cloud) override;
 
     void Init(PointCloud &point_cloud) override;
-    void StepFavourite();
+    void StepFirstFavourite();
     void StepBestFavourite();
     void StepAddFavourite();
 
     void Step() override;
 
-    // für die Visualisierung
+    // für Visualisierung
     size_t GetCurrent() const { return _current; }
     size_t GetFavourite() const { return _favourite; }
-    int GetFavourtiteCandidate() const { return _index_bestfavourite; }
+    int GetBestFavourtite() const { return _index_bestfavourite; }
     giftwrapp_state GetState() const { return _state; }
     const char* GetStateName() const;
 };

@@ -5,6 +5,7 @@
 #ifndef ADALGO_PAINTER_H
 #define ADALGO_PAINTER_H
 #include "Point.h"
+#include "GiftWrapping.h"
 
 
 class Painter {
@@ -15,6 +16,9 @@ public:
     // gestrichelte Linie: abwechselnd dashLength Pixel Strich und gapLength Pixel Lücke
     void PaintDashedLine(const Point &pointA, const Point &pointB, Color color = GRAY,
                          float dashLength = 10.0f, float gapLength = 6.0f);
+
+
+    void PaintGiftWrapper(GiftWrapping& gw, PointCloud& point, int winHeight);
 };
 
 

@@ -31,7 +31,6 @@ public:
     static float Distance(const Vector2& a, const Vector2& b);
 
 
-    virtual void StartAlgorithmVisual(PointCloud& point_cloud) = 0;
     virtual void StartAlgorithmPerformance(PointCloud& point_cloud) = 0;
     virtual void Init(PointCloud &point_cloud) = 0;
     virtual void Step() = 0;

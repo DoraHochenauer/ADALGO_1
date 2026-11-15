@@ -36,3 +36,30 @@ void Painter::PaintDashedLine(const Point &pointA, const Point &pointB, Color co
                    2.0f, color);
     }
 }
+
+void Painter::PaintGiftWrapper(GiftWrapping& gw, PointCloud& points, int winHeight) {
+
+        DrawText("Pfeil rechts = weiter", 10, 10, 20, DARKGRAY);
+        Point &currentPoint = points.GetPoint(gw.GetCurrent());
+        if (gw.GetState() == giftwrapp_state::find_best_favourite) {
+            if (gw.GetBestFavourtite() < points.GetCountPoints()) {
+                PaintDashedLine(currentPoint, points.GetPoint(gw.GetBestFavourtite()), LIGHTGRAY);
+            }
+        }
+        if (gw.GetState() == giftwrapp_state::find_best_favourite ||
+            gw.GetState() == giftwrapp_state::add_favourite) {
+            // orange: aktueller Favorit
+            PaintDashedLine(currentPoint, points.GetPoint(gw.GetFavourite()), ORANGE);
+            }
+
+        for (Point &p: points.GetPointCloud()) {
+            PaintPoint(p);
+        }
+        std::vector<Point> &hull = gw.GetHull().GetPointCloud();
+        for (size_t i = 0; i + 1 < hull.size(); i++) {
+            PaintLine(hull[i], hull[i + 1]);
+        }
+
+        DrawText(TextFormat("Zustand: %s", gw.GetStateName()), 10, winHeight - 30, 20, DARKGRAY);
+
+}
