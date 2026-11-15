@@ -46,10 +46,6 @@ int main() {
 
     GiftWrapping gw;
 
-    //float progress = 0.0f;
-    //const float secondsPerLine = 0.5f;
-
-
     if (selectedMode == pointcloud_mode::file) {
         points.CreatePointCloudFile(std::string(PROJECT_DIR) + "/" + importFile);
     } else {
@@ -57,7 +53,7 @@ int main() {
     }
 
     if (points.GetCountPoints() < 2) {
-        std::cerr << "Mindestens 2 Punkte noetig, vorhanden: " << points.GetCountPoints() << std::endl;
+        std::cerr << "Mindestens 2 Punkte angeben! " << points.GetCountPoints() << std::endl;
         return 1;
     }
 
@@ -69,17 +65,13 @@ int main() {
 
 
         while (!WindowShouldClose()) {
-            // progress += GetFrameTime() / secondsPerLine;
-
-
             BeginDrawing();
             ClearBackground(RAYWHITE);
 
-            // PAINT GIFTWRAPPING
+            // Quickqull hier!
+
             if (algorithm == algorithm::gift_wrapping) {
                 if (IsKeyPressed(KEY_RIGHT)) {
-                    // Step() für Quickqull hier!
-                    //mit if für richtigen gewählten Alg
                     gw.Step();
                 }
                 painter.PaintGiftWrapper(gw, points, winHeight);
