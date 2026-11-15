@@ -16,7 +16,7 @@
 //---------------------------------------
 
 // in welcher Form werden die Punkte erschaffen
-const pointcloud_mode selectedMode = pointcloud_mode::file;
+const pointcloud_mode pointcloud_mode = pointcloud_mode::file;
 
 // Performance oder Visual
 const program_mode programMode = program_mode::performance;
@@ -78,10 +78,10 @@ int main() {
 
     GiftWrapping gw;
 
-    if (selectedMode == pointcloud_mode::file) {
+    if (pointcloud_mode == pointcloud_mode::file) {
         points.CreatePointCloudFile(std::string(PROJECT_DIR) + "/" + importFile);
     } else {
-        points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selectedMode);
+        points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, pointcloud_mode);
     }
 
     if (points.GetCountPoints() < 2) {
@@ -89,7 +89,7 @@ int main() {
         return 1;
     }
 
-    if (selectedMode == pointcloud_mode::file && programMode == program_mode::visual) {
+    if (pointcloud_mode == pointcloud_mode::file && programMode == program_mode::visual) {
         MapToWindow(points);
     }
 
