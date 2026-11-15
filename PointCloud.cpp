@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <ostream>
+#include <fstream>
 
  Point& PointCloud::GetPoint(size_t index) {
      return _pointCloud[index];
@@ -63,7 +64,6 @@ void PointCloud::PushPoint(const Point &point) {
     if (p.y < _pointCloud[_minYIndex].GetPoint().y) _minYIndex = i;
     if (p.y > _pointCloud[_maxYIndex].GetPoint().y) _maxYIndex = i;
 
-    std::cout << "POINT: " << p.x << " " << p.y << std::endl;
 }
 
 
@@ -106,6 +106,10 @@ void PointCloud::CreatePointCloud(float width, float height, float border, int n
     }
 
 
+    ColorExtremes();
+}
+
+void PointCloud::ColorExtremes() {
     if (_pointCloud.empty()) {
         return;
     }
@@ -115,9 +119,39 @@ void PointCloud::CreatePointCloud(float width, float height, float border, int n
     _pointCloud[_maxYIndex].SetColor(RED);
     _pointCloud[_minXIndex].SetColor(RED);
     _pointCloud[_minYIndex].SetColor(RED);
+}
 
-    std::cout << "MAX X: " << GetMaxXPoint().GetPoint().x << " " << GetMaxXPoint().GetPoint().y << std::endl;
-    std::cout << "MAX Y: " << GetMaxYPoint().GetPoint().x << " " << GetMaxYPoint().GetPoint().y << std::endl;
-    std::cout << "MIN X: " << GetMinXPoint().GetPoint().x << " " << GetMinXPoint().GetPoint().y << std::endl;
-    std::cout << "MIN Y: " << GetMinYPoint().GetPoint().x << " " << GetMinYPoint().GetPoint().y << std::endl;
+bool PointCloud::CreatePointCloudFile(const std::string& filename) {
+    _pointCloud.clear();
+    _minXIndex = _maxXIndex = _minYIndex = _maxYIndex = _countPoints = 0;
+
+    std::ifstream file(filename);
+    if (!file) {
+        std::cerr << "Datei nicht gefunden: " << filename << std::endl;
+        return false;
+    }
+
+    // erste Zeile: Anzahl der Punkte
+    int count = 0;
+    if (!(file >> count) || count < 0) {
+        std::cerr << "Erste Zeile ist keine gueltige Anzahl: " << filename << std::endl;
+        return false;
+    }
+    _pointCloud.reserve(count);
+
+    // danach pro Punkt "x,y"
+    // >> überspringt Leerzeichen, Leerzeilen und Windows-Zeilenenden (\r\n) automatisch
+    for (int i = 0; i < count; i++) {
+        float x, y;
+        char comma;
+        if (!(file >> x >> comma >> y) || comma != ',') {
+            std::cerr << "Fehler beim Lesen von Punkt " << i + 1 << " von " << count
+                      << " (erwartet: x,y)" << std::endl;
+            break;   // bis hierher gelesene Punkte behalten
+        }
+        PushPoint(Vector2{x, y});
+    }
+
+    ColorExtremes();
+    return !_pointCloud.empty();
 }

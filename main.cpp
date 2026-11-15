@@ -1,6 +1,7 @@
 #include <iostream>
 #include "raylib.h"
 #include <vector>
+#include <string>
 
 #include <chrono>
 
@@ -9,12 +10,26 @@
 #include "PointCloud.h"
 #include "ConvexHull.h"
 
+// HIER KONFIGURIEREN
+//---------------------------------------
 
-const pointcloud_mode selectedMode = pointcloud_mode::random_points;
+// in welcher Form werden die Punkte erschaffen
+const pointcloud_mode selectedMode = pointcloud_mode::line;
 
+// Performance oder Visual
 const program_mode programMode = program_mode::visual;
+
+// Welcher Algorithmus für visual
 const algorithm algorithm = algorithm::gift_wrapping;
-const int numberPoints = 30;
+
+//wieviele Punkte (nicht bei pointcloud_mode::file, dort steht die Anzahl in der Datei)
+const int numberPoints = 5;
+
+// Datei für pointcloud_mode::file (relativ zum Projektordner)
+const std::string importFile = "importPoints";
+
+//---------------------------------------
+
 
 const int winWidth = 800;
 const int winHeight = 600;
@@ -23,6 +38,9 @@ const int drawBorder = 20;
 
 
 int main() {
+    //MIND 2 PUNKTE!
+
+
     PointCloud points;
     Painter painter;
 
@@ -32,7 +50,17 @@ int main() {
     //const float secondsPerLine = 0.5f;
 
 
-    points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selectedMode);
+    if (selectedMode == pointcloud_mode::file) {
+        points.CreatePointCloudFile(std::string(PROJECT_DIR) + "/" + importFile);
+    } else {
+        points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selectedMode);
+    }
+
+    if (points.GetCountPoints() < 2) {
+        std::cerr << "Mindestens 2 Punkte noetig, vorhanden: " << points.GetCountPoints() << std::endl;
+        return 1;
+    }
+
     gw.Init(points);
 
     if (programMode == program_mode::visual) {
@@ -50,6 +78,8 @@ int main() {
             // PAINT GIFTWRAPPING
             if (algorithm == algorithm::gift_wrapping) {
                 if (IsKeyPressed(KEY_RIGHT)) {
+                    // Step() für Quickqull hier!
+                    //mit if für richtigen gewählten Alg
                     gw.Step();
                 }
                 painter.PaintGiftWrapper(gw, points, winHeight);
@@ -64,7 +94,8 @@ int main() {
     if (programMode == program_mode::performance) {
         auto start = std::chrono::steady_clock::now();
 
-            gw.StartAlgorithmPerformance(points);
+        gw.StartAlgorithmPerformance(points);
+        //Quickhull hier!
 
         auto end = std::chrono::steady_clock::now();
 

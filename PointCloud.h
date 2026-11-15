@@ -6,6 +6,7 @@
 
 #include "raylib.h"
 #include <vector>
+#include <string>
 #include <cmath>
 #include "enums.h"
 #include "Point.h"
@@ -21,6 +22,7 @@ private:
     size_t _maxXIndex = 0;
     size_t _maxYIndex = 0;
 
+    void ColorExtremes();   // Extrempunkte rot färben (für beide Create-Funktionen)
 
 public:
     void PushPoint(const Point&  point);
@@ -32,6 +34,8 @@ public:
     std::vector<Point> &GetPointCloud();
 
     void CreatePointCloud(float width, float height, float border, int numberPoints, pointcloud_mode mode);
+    // Datei: erste Zeile = Anzahl Punkte, danach pro Zeile "x,y"; false wenn das Lesen fehlschlägt
+    bool CreatePointCloudFile(const std::string& filename);
 
     float GetMaxX() const;
     float GetMinX() const;

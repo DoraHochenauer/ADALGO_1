@@ -7,8 +7,9 @@
 
 
 enum class pointcloud_mode {
-    random_points, line, circle, performance
+    random_points, line, circle, performance, file
 };
+
 
 enum class program_mode {
     visual, performance

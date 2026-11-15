@@ -25,3 +25,7 @@ add_executable(ADALGO main.cpp
         GiftWrapping.cpp
         GiftWrapping.h)
 target_link_libraries(ADALGO raylib)
+
+# Projektordner als Konstante, damit Dateien wie importPoints auch gefunden werden,
+# wenn das Programm aus cmake-build-debug gestartet wird
+target_compile_definitions(ADALGO PRIVATE PROJECT_DIR="${CMAKE_SOURCE_DIR}")

@@ -43,19 +43,27 @@ const char *GiftWrapping::GetStateName() const {
 }
 
 void GiftWrapping::StepBestFavourite() {
-    if (_pointsAddedIndex.contains(_index_bestfavourite)) { return; }
     if (_index_bestfavourite < _motherPointCloud->GetCountPoints()) {
         float cp = CrossProduct(_motherPointCloud->GetPoint(_current).GetPoint(),
                                 _motherPointCloud->GetPoint(_favourite).GetPoint(),
                                 _motherPointCloud->GetPointCloud()[_index_bestfavourite].GetPoint());
 
-        if (cp > 0) {
+
+        if (cp > 0 || (cp == 0 && Distance(_motherPointCloud->GetPointCloud()[_current].GetPoint(),
+                                           _motherPointCloud->GetPointCloud()[_index_bestfavourite].GetPoint()) >
+                       Distance(_motherPointCloud->GetPointCloud()[_current].GetPoint(),
+                                _motherPointCloud->GetPointCloud()[_index_bestfavourite].GetPoint()))) {
             _favourite = _index_bestfavourite;
         }
     }
     _index_bestfavourite++;
 
-    if (_index_bestfavourite == _motherPointCloud->GetCountPoints())
+    // gleich über besuchte Punkte springen, damit der nächste Kandidat (graue Linie) nie ein Hüllpunkt ist
+    while (_index_bestfavourite < _motherPointCloud->GetCountPoints() && _pointsAddedIndex.
+           contains(_index_bestfavourite))
+        _index_bestfavourite++;
+
+    if (_index_bestfavourite >= _motherPointCloud->GetCountPoints())
         _state = giftwrapp_state::add_favourite;
 }
 
@@ -81,12 +89,22 @@ void GiftWrapping::StepFirstFavourite() {
     }
 
     _index_bestfavourite = 0;
+    // falls Punkt 0 schon in der Hülle ist -> zum ersten unbesuchten springen
+    while (_index_bestfavourite < _motherPointCloud->GetCountPoints() && _pointsAddedIndex.
+           contains(_index_bestfavourite))
+        _index_bestfavourite++;
     _state = giftwrapp_state::find_best_favourite;
 }
 
 
 //PERFORMANCE
 void GiftWrapping::StartAlgorithmPerformance(PointCloud &point_cloud) {
+    //FÜR EDGE CASE LINIE WENN ALLE cp 0 = ALLE AUF LINIE SIND
+    float sumcp = 0;
+    float maxDist = 0;
+    float currentDist = 0;
+    size_t indexMaxDist;
+
     do {
         //find first _favourite, not visited (und nicht current selbst)
         for (int i = 0; i < _motherPointCloud->GetCountPoints(); i++) {
@@ -104,14 +122,29 @@ void GiftWrapping::StartAlgorithmPerformance(PointCloud &point_cloud) {
             float cp = CrossProduct(_motherPointCloud->GetPoint(_current).GetPoint(),
                                     _motherPointCloud->GetPoint(_favourite).GetPoint(),
                                     _motherPointCloud->GetPointCloud()[i].GetPoint());
+            sumcp += cp;
 
             if (cp > 0) {
                 _favourite = i;
             }
 
             if (cp == 0) {
-                //EDGE CASE LINIE WENN ALLE 0 SIND
+                currentDist = ConvexHull::Distance(_motherPointCloud->GetPoint(_current).GetPoint(),
+                                                   _motherPointCloud->GetPoint(_favourite).GetPoint());
+
+                if (currentDist > maxDist) {
+                    maxDist = currentDist;
+                    indexMaxDist = i;
+                }
             }
+        }
+
+        // edge case Line
+        if (sumcp == 0) {
+            _favourite = indexMaxDist;
+            AddPoint(_motherPointCloud->GetPoint(_favourite));
+
+            _state = giftwrapp_state::done;
         }
 
         AddPoint(_motherPointCloud->GetPoint(_favourite));
