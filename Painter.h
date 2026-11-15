@@ -6,6 +6,7 @@
 #define ADALGO_PAINTER_H
 #include "Point.h"
 #include "GiftWrapping.h"
+#include "QuickHull.h"
 
 
 class Painter {
@@ -19,6 +20,7 @@ public:
 
 
     void PaintGiftWrapper(GiftWrapping& gw, PointCloud& point, int winHeight);
+    void PaintQuickHull(QuickHull& qh, PointCloud& points, int winHeight);
 };
 
 

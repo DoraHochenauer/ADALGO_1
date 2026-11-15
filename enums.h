@@ -24,4 +24,8 @@ enum class giftwrapp_state {
     find_first_favourite,    find_best_favourite, add_favourite, done
 };
 
+enum class quickhull_state {
+    choose_segment, find_farthest, split, done
+};
+
 #endif //ADALGO_ENUMS_H
