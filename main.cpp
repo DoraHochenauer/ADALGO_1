@@ -2,15 +2,17 @@
 #include "raylib.h"
 #include <vector>
 
+#include <chrono>
+
 #include "GiftWrapping.h"
 #include "Painter.h"
 #include "PointCloud.h"
-#include "raymath.h"
+#include "ConvexHull.h"
 
 
 const pointcloud_mode selectedMode = pointcloud_mode::random_points;
 
-const program_mode programMode = program_mode::visual;
+const program_mode programMode = program_mode::performance;
 const algorithm algorithm = algorithm::gift_wrapping;
 const int numberPoints = 5;
 
@@ -24,8 +26,12 @@ int main() {
     PointCloud points;
     Painter painter;
 
+    GiftWrapping gw;
+
     float progress = 0.0f;
     const float secondsPerLine = 0.5f;
+
+
 
     points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selectedMode);
 
@@ -33,7 +39,6 @@ int main() {
         InitWindow(winWidth, winHeight, "ADALGO - TASK1");
         SetTargetFPS(60);
 
-        GiftWrapping gw;
         gw.Init(points);
 
         while (!WindowShouldClose()) {
@@ -47,7 +52,7 @@ int main() {
             BeginDrawing();
             ClearBackground(RAYWHITE);
 
-            // GIFTWRAPPING
+            // PAINT GIFTWRAPPING
             if (algorithm == algorithm::gift_wrapping) {
                 DrawText("Pfeil rechts = weiter", 10, 10, 20, DARKGRAY);
                 Point &currentPoint = points.GetPoint(gw.GetCurrent());
@@ -77,5 +82,16 @@ int main() {
 
         CloseWindow();
     }
+
+
+    if (programMode == program_mode::performance) {
+
+        auto start = std::chrono::steady_clock::now();
+        gw.StartAlgorithmPerformance(points);
+        auto end = std::chrono::steady_clock::now();
+
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "Gift Wrapping mit " << points.GetCountPoints() << " Punkten: "
+                  << ms << " ms" << std::endl;    }
     return 0;
 }
