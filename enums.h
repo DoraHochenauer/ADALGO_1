@@ -7,7 +7,8 @@
 
 
 enum class pointcloud_mode {
-    random_points, line, circle, performance, file
+    random_points, line, circle, performance, file,
+    arc   // Bogen: Worst Case für QuickHull
 };
 
 

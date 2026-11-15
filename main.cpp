@@ -17,19 +17,19 @@
 //---------------------------------------
 
 // in welcher Form werden die Punkte erschaffen
-const pointcloud_mode pointcloud_mode = pointcloud_mode::file;
+const pointcloud_mode pointcloud_mode = pointcloud_mode::random_points;
 
 // Performance oder Visual
 const program_mode programMode = program_mode::visual;
 
 // Welcher Algorithmus für visual
-const algorithm algorithm = algorithm::quickqull;
+const algorithm algorithm = algorithm::gift_wrapping;
 
 //wieviele Punkte (nicht bei pointcloud_mode::file, dort steht die Anzahl in der Datei)
 const int numberPoints = 15;
 
 // Datei für pointcloud_mode::file (relativ zum Projektordner)
-const std::string importFile = "importPoints10000";
+const std::string importFile = "importPoints100";
 
 //---------------------------------------
 

@@ -7,6 +7,9 @@
 void QuickHull::Init(PointCloud &point_cloud) {
     _motherPointCloud = &point_cloud;
 
+    // falls Init mehrmals aufgerufen wird: alte Segmente weg, sonst wird alles doppelt gerechnet
+    _stack.clear();
+
     // minX und maxX liegen sicher auf der Hülle
     size_t left = point_cloud.GetMinXIndex();
     size_t right = point_cloud.GetMaxXIndex();

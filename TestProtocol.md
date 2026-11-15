@@ -1,5 +1,7 @@
 # Testprotokoll Assignment 1 – Convex Hull
 
+Gruppe: Verena Hochmayer, Doris Hochenauer
+
 ## 1. Aufgabenstellung
 
 Laut Angabe sollen wir 2 Convex-Hull-Algorithmen für 2D implementieren, visualisieren und ihre Performance vergleichen. Zur Auswahl standen Andrew’s algorithm, Gift wrapping, Quickhull und Divide & Conquer. **Wir haben Gift Wrapping und Quickhull gewählt.**
@@ -17,7 +19,6 @@ Wir verwenden C++ (in der Angabe empfohlen) und raylib zum Zeichnen. Visual und 
 
 | Teil | Umsetzung |
 | --- | --- |
-| Gruppe | Offene Frage: Namen der beiden Gruppenmitglieder eintragen |
 | Algorithmen | `GiftWrapping` und `QuickHull` (mit Stack statt Rekursion, damit der Visual Mode nach jedem Schritt anhalten kann) |
 | Gemeinsame Basis | `ConvexHull` mit `Init`, `Step` und `StartAlgorithmPerformance` |
 | Eingabedaten | Zufall, Kreis, Linie, Datei |
@@ -58,7 +59,7 @@ Punktformen aus unserem Programm und kleine Importdateien für Sonderfälle:
 | Zufallspunkte | `pointcloud_mode::random_points` | wenige Hüllpunkte, beide Algorithmen schnell |
 | Kreis | `pointcloud_mode::circle` | alle Punkte auf der Hülle |
 | Linie | `pointcloud_mode::line` | nur 2 Hüllpunkte |
-| Datei `importPoints` | `pointcloud_mode::file` | 2 Punkte, Hülle = beide Punkte |
+| Dateien `importPoints100`, `importPoints10000`, `importPoints100000` | `pointcloud_mode::file` | feste Punkte aus der Datei, wenige Hüllpunkte |
 | Gleichstand bei minX | Importdatei mit `0,5` `0,0` `0,10` `10,5` | Hülle (0,0), (10,5), (0,10) |
 | Senkrechte Linie | Importdatei mit `1,4` `1,0` `1,2` | Hülle (1,0), (1,4) |
 
@@ -83,7 +84,14 @@ Alle Punkte auf der Hülle reicht nicht, es kommt auf die Aufteilung an:
 - **Kreis:** Der weiteste Punkt liegt in der Bogenmitte, die Punkte werden halbiert: 16 → 8 + 8 → 4 + 4 + 4 + 4 → … = O(n log n).
 - **Worst Case:** Der weiteste Punkt liegt immer am Rand, nur ein Punkt wird abgetrennt: 16 → 1 + 15 → 1 + 14 → … = O(n²). Z.B. Punkte auf einem Bogen, die zu einem Ende hin immer enger werden.
 
-Wie bei Quicksort: Pivot in der Mitte ist schnell, Pivot am Rand langsam. Mit vielen Punkten können wir das nicht testen, weil `float` die engen Punkte nicht mehr unterscheiden kann.
+Wie bei Quicksort: Pivot in der Mitte ist schnell, Pivot am Rand langsam. Mit vielen Punkten können wir das nicht testen, weil `float` die engen Punkte nicht mehr unterscheiden kann. Deshalb haben wir den Bogen als eigene Figur `pointcloud_mode::arc` (höchstens 12 Punkte) eingebaut und im Visual Mode die Schritte bis „Fertig“ gezählt:
+
+| Figur (6 Punkte) | Schritte QuickHull |
+| --- | --- |
+| Kreis | 20 |
+| Bogen | 24 |
+
+Beim Bogen werden pro Aufteilung 4, 3, 2, 1 Punkte geprüft: Es fällt jedes Mal nur ein Punkt weg.
 
 ### Probleme, die uns beim Testen aufgefallen sind
 
@@ -93,7 +101,7 @@ Wie bei Quicksort: Pivot in der Mitte ist schnell, Pivot am Rand langsam. Mit vi
 
 ## 7. Zeitmessungen
 
-Gemessen im Performance Mode (Release-Build) auf AMD Ryzen 9 9900X, 64 GB RAM, Windows 11 Pro, GCC 15.2. Jede Messung 3-mal, eingetragen ist der Median. Eingestellt in `main.cpp` über `programMode`, `selectedMode` und `numberPoints`.
+Gemessen im Performance Mode (Release-Build) auf AMD Ryzen 9 9900X, 64 GB RAM, Windows 11 Pro, GCC 15.2. Jede Messung 3-mal, eingetragen ist der Median. Eingestellt in `main.cpp` über `programMode`, `pointcloud_mode` und `numberPoints`.
 
 | Testfall | n | Hüllpunkte GW | Hüllpunkte QH | Gift Wrapping (ms) | QuickHull (ms) |
 | --- | --- | --- | --- | --- | --- |
@@ -109,7 +117,9 @@ Gemessen im Performance Mode (Release-Build) auf AMD Ryzen 9 9900X, 64 GB RAM, W
 | Linie | 50.000 | 2 | 2 | 1,28 | 0,109 |
 | Linie | 100.000 | 2 | 2 | 2,57 | 0,22 |
 | Linie | 1.000.000 | 2 | 2 | 25,5 | 2,11 |
-| Datei `importPoints` | 2 | 2 | 2 | 0,008 | 0,009 |
+| Datei `importPoints100` | 100 | 10 | 10 | 0,014 | 0,008 |
+| Datei `importPoints10000` | 10.000 | 22 | 22 | 1,10 | 0,247 |
+| Datei `importPoints100000` | 100.000 | 19 | 19 | 10,1 | 2,23 |
 
 Bei Zufall sind die Punkte bei jedem Lauf andere, deshalb schwankt die Anzahl der Hüllpunkte.
 
@@ -153,9 +163,15 @@ Die einzelnen Läufe zu den Medianen oben (`cmake-build-release\ADALGO.exe`).
 | Linie | 1.000.000 | 1 | 25,515 | 2,121 | 2 | 2 |
 | Linie | 1.000.000 | 2 | 25,193 | 2,106 | 2 | 2 |
 | Linie | 1.000.000 | 3 | 25,708 | 2,115 | 2 | 2 |
-| Datei `importPoints` | 2 | 1 | 0,0079 | 0,0092 | 2 | 2 |
-| Datei `importPoints` | 2 | 2 | 0,0079 | 0,0100 | 2 | 2 |
-| Datei `importPoints` | 2 | 3 | 0,0054 | 0,0062 | 2 | 2 |
+| Datei `importPoints100` | 100 | 1 | 0,0151 | 0,0077 | 10 | 10 |
+| Datei `importPoints100` | 100 | 2 | 0,0141 | 0,0124 | 10 | 10 |
+| Datei `importPoints100` | 100 | 3 | 0,0131 | 0,0079 | 10 | 10 |
+| Datei `importPoints10000` | 10.000 | 1 | 1,103 | 0,247 | 22 | 22 |
+| Datei `importPoints10000` | 10.000 | 2 | 1,167 | 0,266 | 22 | 22 |
+| Datei `importPoints10000` | 10.000 | 3 | 1,090 | 0,239 | 22 | 22 |
+| Datei `importPoints100000` | 100.000 | 1 | 10,355 | 2,230 | 19 | 19 |
+| Datei `importPoints100000` | 100.000 | 2 | 10,079 | 2,233 | 19 | 19 |
+| Datei `importPoints100000` | 100.000 | 3 | 9,760 | 2,301 | 19 | 19 |
 
 Kreis mit 1.000.000 Punkten nur 1 Lauf, weil Gift Wrapping dafür 5,5 Minuten braucht.
 
@@ -170,5 +186,3 @@ Entscheidend ist, wie viele Punkte auf der Hülle liegen:
 - **QuickHull-Worst-Case:** nur bei speziell angeordneten Punkten (Kapitel 6).
 
 Gift Wrapping ist einfacher zu verstehen und zu zeichnen, QuickHull bei vielen Hüllpunkten viel schneller.
-
-Offene Frage: Fazit nach den Zeitmessungen mit unseren echten Zahlen ergänzen.

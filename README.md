@@ -29,8 +29,9 @@ Die exe liegt dann im jeweiligen cmake-build Ordner.
 ## Einstellungen
 
 Oben in der main.cpp unter "HIER KONFIGURIEREN":
-- `selectedMode`: random_points, line, circle oder file
-- `programMode`: visual oder performance
+- `pointcloud_mode`: random_points, line, circle, arc oder file
+- `programMode`: visual oder performance (im performance Modus laufen immer beide Algorithmen)
+- `algorithm`: gift_wrapping oder quickqull, welcher Algorithmus im visual Modus gezeigt wird
 - `numberPoints`: wie viele Punkte (bei file egal)
 - `importFile`: welche Datei geladen wird
 

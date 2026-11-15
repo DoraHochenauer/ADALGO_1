@@ -102,6 +102,26 @@ void PointCloud::CreatePointCloud(float width, float height, float border, int n
             }
             break;
         }
+
+        case pointcloud_mode::arc: {
+            // Worst Case für QuickHull: Punkte auf einem Bogen (Parabel),
+            // der Abstand zum rechten Ende halbiert sich jedes Mal (x = 0, 1/2, 3/4, 7/8, ..., 1).
+            // Der weiteste Punkt liegt so immer direkt neben dem Rand
+            // -> bei jedem Schritt wird nur 1 Punkt abgetrennt.
+            // Höchstens 12 Punkte: danach liegen die Punkte zu eng für float.
+            int count = std::min(numberPoints, 12);
+            float w = width - 2.0f * border;
+            float h = height - 2.0f * border;
+            float x = 0.0f;     // 0 .. 1
+            float gap = 0.5f;
+            for (int i = 0; i < count - 1; i++) {
+                PushPoint(Vector2{border + x * w, height - border - x * x * h});
+                x += gap;
+                gap /= 2.0f;
+            }
+            PushPoint(Vector2{border + w, border});   // rechtes Ende (x = 1)
+            break;
+        }
         default: break;
     }
 
