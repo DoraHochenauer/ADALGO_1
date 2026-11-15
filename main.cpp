@@ -20,13 +20,13 @@
 const pointcloud_mode pointcloud_mode = pointcloud_mode::file;
 
 // Performance oder Visual
-const program_mode programMode = program_mode::performance;
+const program_mode programMode = program_mode::visual;
 
 // Welcher Algorithmus für visual
 const algorithm algorithm = algorithm::quickqull;
 
 //wieviele Punkte (nicht bei pointcloud_mode::file, dort steht die Anzahl in der Datei)
-const int numberPoints = 5;
+const int numberPoints = 15;
 
 // Datei für pointcloud_mode::file (relativ zum Projektordner)
 const std::string importFile = "importPoints10000";
@@ -71,8 +71,6 @@ void MapToWindow(PointCloud &points) {
 
 
 int main() {
-    //MIND 2 PUNKTE!
-
 
     PointCloud points;
     Painter painter;
@@ -85,7 +83,7 @@ int main() {
     } else {
         points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, pointcloud_mode);
     }
-
+    //MIND 2 PUNKTE!
     if (points.GetCountPoints() < 2) {
         std::cerr << "Mindestens 2 Punkte angeben! " << points.GetCountPoints() << std::endl;
         return 1;
@@ -96,21 +94,20 @@ int main() {
     }
 
     gw.Init(points);
+    // QuickHull vorbereiten (GiftWrapping wurde oben schon mit gw.Init initialisiert)
+    qh.Init(points);
 
     if (programMode == program_mode::visual) {
         InitWindow(winWidth, winHeight, "ADALGO - TASK1");
         SetTargetFPS(60);
 
-        // QuickHull vorbereiten (GiftWrapping wurde oben schon mit gw.Init initialisiert)
-        qh.Init(points);
 
 
         while (!WindowShouldClose()) {
             BeginDrawing();
             ClearBackground(RAYWHITE);
 
-            // Quickqull hier!
-
+            //PAINT GIFTWRAPPING
             if (algorithm == algorithm::gift_wrapping) {
                 if (IsKeyPressed(KEY_RIGHT)) {
                     gw.Step();
