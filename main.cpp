@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <cmath>
 
 #include <chrono>
 
@@ -15,10 +17,10 @@
 //---------------------------------------
 
 // in welcher Form werden die Punkte erschaffen
-const pointcloud_mode selectedMode = pointcloud_mode::circle;
+const pointcloud_mode pointcloud_mode = pointcloud_mode::file;
 
 // Performance oder Visual
-const program_mode programMode = program_mode::visual;
+const program_mode programMode = program_mode::performance;
 
 // Welcher Algorithmus für visual
 const algorithm algorithm = algorithm::quickqull;
@@ -27,7 +29,7 @@ const algorithm algorithm = algorithm::quickqull;
 const int numberPoints = 5;
 
 // Datei für pointcloud_mode::file (relativ zum Projektordner)
-const std::string importFile = "importPoints";
+const std::string importFile = "importPoints10000";
 
 //---------------------------------------
 
@@ -36,6 +38,36 @@ const int winWidth = 800;
 const int winHeight = 600;
 
 const int drawBorder = 20;
+
+
+// Skaliert und verschiebt alle Punkte so, dass sie ins Fenster passen für visual mode
+void MapToWindow(PointCloud &points) {
+    float minX = points.GetMinX(), maxX = points.GetMaxX();
+    float minY = points.GetMinY(), maxY = points.GetMaxY();
+
+    float rangeX = maxX - minX;
+    float rangeY = maxY - minY;
+    float availableW = winWidth - 2.0f * drawBorder;
+    float availableH = winHeight - 2.0f * drawBorder;
+    float scaleX = rangeX > 0 ? availableW / rangeX : INFINITY;
+    float scaleY = rangeY > 0 ? availableH / rangeY : INFINITY;
+    float scale = std::min(scaleX, scaleY);
+    if (scale == INFINITY) scale = 1.0f;   // alle Punkte identisch
+
+    // Mitte der Punktwolke kommt in die Fenstermitte
+    float centerX = (minX + maxX) / 2.0f;
+    float centerY = (minY + maxY) / 2.0f;
+
+    PointCloud mapped;
+    for (const Point &p: points.GetPointCloud()) {
+        Vector2 v = p.GetPoint();
+        mapped.PushPoint(Point(Vector2{
+                                   winWidth / 2.0f + (v.x - centerX) * scale,
+                                   winHeight / 2.0f + (v.y - centerY) * scale
+                               }, p.GetColor()));   // Farbe (rote Extrempunkte) mitnehmen
+    }
+    points = mapped;
+}
 
 
 int main() {
@@ -48,19 +80,19 @@ int main() {
     GiftWrapping gw;
     QuickHull qh;
 
-    //float progress = 0.0f;
-    //const float secondsPerLine = 0.5f;
-
-
-    if (selectedMode == pointcloud_mode::file) {
+    if (pointcloud_mode == pointcloud_mode::file) {
         points.CreatePointCloudFile(std::string(PROJECT_DIR) + "/" + importFile);
     } else {
-        points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, selectedMode);
+        points.CreatePointCloud(winWidth, winHeight, drawBorder, numberPoints, pointcloud_mode);
     }
 
     if (points.GetCountPoints() < 2) {
-        std::cerr << "Mindestens 2 Punkte noetig, vorhanden: " << points.GetCountPoints() << std::endl;
+        std::cerr << "Mindestens 2 Punkte angeben! " << points.GetCountPoints() << std::endl;
         return 1;
+    }
+
+    if (pointcloud_mode == pointcloud_mode::file && programMode == program_mode::visual) {
+        MapToWindow(points);
     }
 
     gw.Init(points);
@@ -74,13 +106,11 @@ int main() {
 
 
         while (!WindowShouldClose()) {
-            // progress += GetFrameTime() / secondsPerLine;
-
-
             BeginDrawing();
             ClearBackground(RAYWHITE);
 
-            // PAINT GIFTWRAPPING
+            // Quickqull hier!
+
             if (algorithm == algorithm::gift_wrapping) {
                 if (IsKeyPressed(KEY_RIGHT)) {
                     gw.Step();

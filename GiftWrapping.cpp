@@ -42,12 +42,9 @@ const char *GiftWrapping::GetStateName() const {
     return "";
 }
 
-//--------------------------------------------------------------------------
-// GEMEINSAME BAUSTEINE (von Visual und Performance benutzt)
-//--------------------------------------------------------------------------
 
 void GiftWrapping::ChooseFirstFavourite() {
-    // erster unbesuchter Punkt, aber nicht current selbst (sonst wäre jedes Kreuzprodukt 0)
+    // erster unbesuchter Punkt, aber nicht current selbst (sonst wäre Kreuzprodukt 0)
     for (int i = 0; i < _motherPointCloud->GetCountPoints(); i++) {
         _favourite = i;
         if (i != _current && !IsVisited(i))
@@ -62,15 +59,13 @@ void GiftWrapping::CheckCandidate(size_t i) {
 
     float cp = CrossProduct(cur, fav, p);
 
-    // cp > 0: p liegt auf der falschen Seite von cur -> fav
-    // cp == 0: auf einer Linie (z.B. Modus line) -> den weiter entfernten nehmen
     if (cp > 0 || (cp == 0 && Distance(cur, p) > Distance(cur, fav))) {
         _favourite = i;
     }
 }
 
 void GiftWrapping::AddFavourite() {
-    AddPoint(_motherPointCloud->GetPoint(_favourite));   // färbt auch grün
+    AddPoint(_motherPointCloud->GetPoint(_favourite));   // färbt auch grün!
     _current = _favourite;
     _pointsAddedIndex.insert(_current);
 }
@@ -80,10 +75,6 @@ void GiftWrapping::SkipVisitedCandidates() {
     while (_index_bestfavourite < _motherPointCloud->GetCountPoints() && IsVisited(_index_bestfavourite))
         _index_bestfavourite++;
 }
-
-//--------------------------------------------------------------------------
-// VISUAL: ein Teilschritt pro Step()
-//--------------------------------------------------------------------------
 
 void GiftWrapping::StepFirstFavourite() {
     ChooseFirstFavourite();
@@ -113,10 +104,6 @@ void GiftWrapping::StepAddFavourite() {
                  ? giftwrapp_state::done
                  : giftwrapp_state::find_first_favourite;
 }
-
-//--------------------------------------------------------------------------
-// PERFORMANCE: dieselben Bausteine, nur ohne Pausen dazwischen
-//--------------------------------------------------------------------------
 
 void GiftWrapping::StartAlgorithmPerformance(PointCloud &point_cloud) {
     do {
