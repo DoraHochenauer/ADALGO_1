@@ -11,7 +11,8 @@
 const pointcloud_mode selectedMode = pointcloud_mode::random_points;
 
 const program_mode programMode = program_mode::visual;
-const int numberPoints = 20;
+const algorithm algorithm = algorithm::gift_wrapping;
+const int numberPoints = 5;
 
 const int winWidth = 800;
 const int winHeight = 600;
@@ -33,27 +34,44 @@ int main() {
         SetTargetFPS(60);
 
         GiftWrapping gw;
-       gw.StartAlgorithmVisual(points);
+        gw.Init(points);
 
         while (!WindowShouldClose()) {
             progress += GetFrameTime() / secondsPerLine;
 
+
+            if (IsKeyPressed(KEY_RIGHT)) {
+                gw.Step();
+            }
+
             BeginDrawing();
             ClearBackground(RAYWHITE);
 
-            for (Point &p: points.GetPointCloud()) {
-                painter.PaintPoint(p);
+            // GIFTWRAPPING
+            if (algorithm == algorithm::gift_wrapping) {
+                DrawText("Pfeil rechts = weiter", 10, 10, 20, DARKGRAY);
+                Point &currentPoint = points.GetPoint(gw.GetCurrent());
+                if (gw.GetState() == giftwrapp_state::find_best_favourite) {
+                    if (gw.GetFavourtiteCandidate() < points.GetCountPoints()) {
+                        painter.PaintDashedLine(currentPoint, points.GetPoint(gw.GetFavourtiteCandidate()), LIGHTGRAY);
+                    }
+                }
+                if (gw.GetState() == giftwrapp_state::find_best_favourite ||
+                    gw.GetState() == giftwrapp_state::add_favourite) {
+                    // orange: aktueller Favorit
+                    painter.PaintDashedLine(currentPoint, points.GetPoint(gw.GetFavourite()), ORANGE);
+                    }
+
+                for (Point &p: points.GetPointCloud()) {
+                    painter.PaintPoint(p);
+                }
+                std::vector<Point> &hull = gw.GetHull().GetPointCloud();
+                for (size_t i = 0; i + 1 < hull.size(); i++) {
+                    painter.PaintLine(hull[i], hull[i + 1]);
+                }
+
+                DrawText(TextFormat("Zustand: %s", gw.GetStateName()), 10, winHeight - 30, 20, DARKGRAY);
             }
-
-
-
-            /*
-            // Linie i wächst, während progress von i auf i+1 steigt (PaintLine begrenzt auf 0..1)
-            painter.PaintLine(points.GetMinXPoint(), points.GetMaxYPoint(), progress - 0);
-            painter.PaintLine(points.GetMaxYPoint(), points.GetMaxXPoint(), progress - 1);
-            painter.PaintLine(points.GetMaxXPoint(), points.GetMinYPoint(), progress - 2);
-            painter.PaintLine(points.GetMinYPoint(), points.GetMinXPoint(), progress - 3);
-*/
             EndDrawing();
         }
 

@@ -11,6 +11,10 @@ class Painter {
 public:
     void PaintPoint(Point &point);
     void PaintLine(const Point &pointA, const Point &pointB, float progress = 1.0f, Color color = BLACK);
+
+    // gestrichelte Linie: abwechselnd dashLength Pixel Strich und gapLength Pixel Lücke
+    void PaintDashedLine(const Point &pointA, const Point &pointB, Color color = GRAY,
+                         float dashLength = 10.0f, float gapLength = 6.0f);
 };
 
 
