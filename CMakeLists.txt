@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 4.3)
+# 3.25 wegen CMakePresets.json (Version 6), sonst reicht auch älter
+cmake_minimum_required(VERSION 3.25)
 project(ADALGO)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -14,8 +15,8 @@ add_executable(ADALGO main.cpp
         PointCloud.cpp
         PointCloud.h
         enums.h
-        randomGenerator.cpp
-        randomGenerator.h
+        RandomGenerator.cpp
+        RandomGenerator.h
         Point.cpp
         Point.h
         Painter.cpp

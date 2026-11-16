@@ -4,7 +4,7 @@
 
 #ifndef ADALGO_GIFTWRAPPING_H
 #define ADALGO_GIFTWRAPPING_H
-#include <unordered_set>
+#include <vector>
 
 #include "ConvexHull.h"
 #include "enums.h"
@@ -17,14 +17,16 @@ private:
     size_t _current = 0;
     size_t _favourite = 0;
     size_t _start = 0;   // Startpunkt (minX); wieder dort angekommen = Hülle geschlossen
-    std::unordered_set<size_t> _pointsAddedIndex;
+    // ein Eintrag pro Punkt (1 = schon in der Hülle), Zugriff über den Index
+    // ist viel schneller als ein unordered_set (kein Hash, kein Suchen)
+    std::vector<char> _visited;
 
     giftwrapp_state _state = giftwrapp_state::find_first_favourite;
     int _index_bestfavourite = 0;
 
     // Gemeinsame Bausteine: Visual (Step) und Performance benutzen genau diese,
     // damit beide Modi garantiert denselben Algorithmus ausführen
-    bool IsVisited(size_t i) const { return _pointsAddedIndex.contains(i); }
+    bool IsVisited(size_t i) const { return _visited[i]; }
     void ChooseFirstFavourite();        // erster unbesuchter Punkt != current
     void CheckCandidate(size_t i);      // Punkt i wird Favorit, wenn er "besser" ist
     void AddFavourite();                // Favorit in die Hülle, wird zum neuen current

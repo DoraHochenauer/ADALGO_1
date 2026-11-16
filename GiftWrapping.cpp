@@ -6,10 +6,9 @@
 
 #include "PointCloud.h"
 
-#include <unordered_set>
-
 void GiftWrapping::Init(PointCloud &point_cloud) {
     _motherPointCloud = &point_cloud;
+    _visited.assign(point_cloud.GetCountPoints(), 0);   // am Anfang ist noch nichts besucht
     _start = _current = point_cloud.GetMinXIndex();
     AddPoint(point_cloud.GetPoint(_current));
 }
@@ -67,7 +66,7 @@ void GiftWrapping::CheckCandidate(size_t i) {
 void GiftWrapping::AddFavourite() {
     AddPoint(_motherPointCloud->GetPoint(_favourite));   // färbt auch grün!
     _current = _favourite;
-    _pointsAddedIndex.insert(_current);
+    _visited[_current] = 1;
 }
 
 void GiftWrapping::SkipVisitedCandidates() {
